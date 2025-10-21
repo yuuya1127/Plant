@@ -37,14 +37,14 @@ def identify():
             'organs': 'auto'
         }
         
-        print(f"🌿 PlantNet APIにリクエスト送信中...")
+        print(f"PlantNet APIにリクエスト送信中...")
         response = requests.post(
             f'https://my-api.plantnet.org/v2/identify/all?api-key={PLANTNET_API_KEY}',
             files=files,
             data=data
         )
         
-        print(f"📡 レスポンス: {response.status_code}")
+        print(f"レスポンス: {response.status_code}")
         
         if response.status_code != 200:
             return jsonify({'error': f'API Error: {response.status_code}'}), response.status_code
