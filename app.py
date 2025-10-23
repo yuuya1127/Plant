@@ -2,11 +2,14 @@ from flask import Flask, render_template, request, jsonify
 import requests
 import base64
 from io import BytesIO
+from flask_cors import CORS
+
 
 app = Flask(__name__)
+CORS(app)
 
 # PlantNet APIキー
-PLANTNET_API_KEY = '2b105yVW1gUrILmTOZ3U7wTZXu'
+PLANTNET_API_KEY = '2b10udgkH4OFC14bAPk0saAEO'
 
 @app.route('/')
 def index():
@@ -75,6 +78,7 @@ def result():
 if __name__ == '__main__':
     print('='*50)
     print('🚀 PlantNet 植物識別アプリを起動中...')
-    print('📍 http://localhost:5000')
+    print('📍 http://localhost:5001')
     print('='*50)
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=5001, host="127.0.0.1")
+
