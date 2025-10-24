@@ -4,9 +4,16 @@ import base64
 from io import BytesIO
 from flask_cors import CORS
 
+#Blueprintをインポート
+from routes.login_routes import login_bp
+
 
 app = Flask(__name__)
 CORS(app)
+app.secret_key = "dev_secret"
+
+#Blueprint登録
+app.register_blueprint(login_bp)
 
 # PlantNet APIキー
 PLANTNET_API_KEY = '2b10udgkH4OFC14bAPk0saAEO'

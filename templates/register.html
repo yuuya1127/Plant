@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>新規登録 | 食物画像認識アプリ</title>
+    <style>
+        body {
+            font-family: "Helvetica", "Arial", sans-serif;
+            background: linear-gradient(135deg, #c2f0c2, #a4e5d9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .register-container {
+            background-color: #fff;
+            padding: 40px 60px;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 350px;
+        }
+
+        h1 {
+            color: #2d572c;
+            margin-bottom: 25px;
+            font-size: 24px;
+        }
+
+        label {
+            display: block;
+            text-align: left;
+            margin-top: 10px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+
+        input[type="submit"] {
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            margin-top: 20px;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        p {
+            margin-top: 20px;
+        }
+
+        a {
+            color: #2d572c;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <h1>🌱 アカウント登録</h1>
+        <form method="post" action="/register">
+            <label>ユーザー名</label>
+            <input type="text" name="username" required>
+
+            <label>パスワード</label>
+            <input type="password" name="password" required>
+
+            <input type="submit" value="登録">
+        </form>
+
+        <p>すでに登録済みの方は <a href="/">ログイン画面へ</a></p>
+    </div>
+</body>
+</html>

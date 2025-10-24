@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>ログイン | 食物画像認識アプリ</title>
+<style>
+    body {
+        margin: 0;
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(135deg, #a8e6cf, #dcedc1);
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+    }
+
+    /* 光の粒（背景アニメーション） */
+    .particle {
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 50%;
+        animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0% { transform: translateY(0) scale(1); opacity: 1; }
+        50% { transform: translateY(-50px) scale(1.2); opacity: 0.6; }
+        100% { transform: translateY(0) scale(1); opacity: 1; }
+    }
+
+    .login-card {
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 20px;
+        padding: 40px;
+        width: 380px;
+        text-align: center;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+        position: relative;
+        z-index: 2;
+    }
+
+    h1 {
+        color: #2e7d32;
+        font-size: 28px;
+        margin-bottom: 20px;
+    }
+
+    label {
+        display: block;
+        text-align: left;
+        margin-top: 10px;
+        font-weight: bold;
+        color: #333;
+    }
+
+    input[type="text"], input[type="password"] {
+        width: 100%;
+        padding: 12px;
+        margin-top: 5px;
+        border-radius: 10px;
+        border: 1px solid #ccc;
+        font-size: 16px;
+    }
+
+    button {
+        width: 100%;
+        margin-top: 25px;
+        padding: 12px;
+        font-size: 18px;
+        background: linear-gradient(135deg, #66bb6a, #43a047);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    button:hover {
+        background: linear-gradient(135deg, #43a047, #388e3c);
+    }
+
+    .welcome {
+        font-size: 26px;
+        color: #2e7d32;
+        opacity: 0;
+        transition: opacity 1s ease;
+        margin-top: 30px;
+    }
+
+    .fade-in {
+        opacity: 1 !important;
+    }
+</style>
+</head>
+<body>
+    <!-- 光の粒を複数生成 -->
+    <div class="particle" style="top:10%;left:20%;animation-delay:0s;"></div>
+    <div class="particle" style="top:30%;left:70%;animation-delay:1s;"></div>
+    <div class="particle" style="top:60%;left:40%;animation-delay:2s;"></div>
+    <div class="particle" style="top:80%;left:10%;animation-delay:3s;"></div>
+
+    <div class="login-card" id="loginCard">
+        <h1>🌿 食物画像認識アプリ</h1>
+        <form id="loginForm" action="/login" method="post">
+            <label>ユーザー名</label>
+            <input type="text" name="username" id="username" required>
+
+            <label>パスワード</label>
+            <input type="password" name="password" required>
+
+            <button type="button" onclick="showWelcome()">ログイン</button>
+        </form>
+        <p>アカウントをお持ちでない方は <a href="/register">新規登録</a></p>
+        <div class="welcome" id="welcomeText"></div>
+    </div>
+
+<script>
+function showWelcome() {
+    const username = document.getElementById("username").value.trim();
+    if (!username) {
+        alert("ユーザー名を入力してください。");
+        return;
+    }
+
+    const card = document.getElementById("loginCard");
+    const form = document.getElementById("loginForm");
+    const welcomeText = document.getElementById("welcomeText");
+
+    // フォームを隠す
+    form.style.display = "none";
+
+    // ようこそ → ユーザー名 → ログイン送信
+    welcomeText.innerText = "🌱 ようこそ";
+    welcomeText.classList.add("fade-in");
+
+    setTimeout(() => {
+        welcomeText.innerText = `🌿 ${username} さん`;
+    }, 1500);
+
+    // 2.5秒後にログイン処理送信
+    setTimeout(() => {
+        form.submit();
+    }, 2500);
+}
+</script>
+</body>
+</html>
