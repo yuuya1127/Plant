@@ -1,54 +1,39 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session
-from db import get_connection  # ← これを追加
+from flask import Blueprint, render_template, request
+from db import get_connection
 
-login_bp = Blueprint('login', __name__)
+login_bp = Blueprint("login_bp", __name__)
 
-# --- ログイン画面 ---
-@login_bp.route('/login', methods=['GET', 'POST'])
+@login_bp.route("/login", methods=["GET", "POST"])
 def login():
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
+    error = ""
 
-        conn = get_connection()
-        cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM users WHERE username=%s AND password=%s", (username, password))
-        user = cursor.fetchone()
-        conn.close()
+    if request.method == "POST":
+        username = request.form.get("username", "").strip()
+        password = request.form.get("password", "").strip()
 
-        if user:
-            session['user'] = username
-            return redirect(url_for('index'))  # 植物識別画面へ
+        # 入力チェック
+        if not username and not password:
+            error = "ユーザー名とパスワードが未入力です。"
+        elif not username:
+            error = "ユーザー名が未入力です。"
+        elif not password:
+            error = "パスワードが未入力です。"
         else:
-            return render_template('login.html', error="ユーザー名またはパスワードが違います")
-
-    return render_template('login.html')
-
-
-# --- 新規登録画面 ---
-@login_bp.route('/register', methods=['GET', 'POST'])
-def register():
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-
-        conn = get_connection()
-        cursor = conn.cursor()
-
-        # 同じユーザー名が存在するか確認
-        cursor.execute("SELECT * FROM users WHERE username=%s", (username,))
-        existing = cursor.fetchone()
-
-        if existing:
+            # DB確認（両方一致）
+            conn = get_connection()
+            cursor = conn.cursor(dictionary=True)
+            cursor.execute(
+                "SELECT * FROM users WHERE username=%s AND password=%s",
+                (username, password)
+            )
+            user = cursor.fetchone()
+            cursor.close()
             conn.close()
-            return render_template('register.html', error="このユーザー名は既に使われています")
 
-        # 新規ユーザーを登録
-        cursor.execute("INSERT INTO users (username, password) VALUES (%s, %s)", (username, password))
-        conn.commit()
-        conn.close()
+            if not user:
+                error = "ユーザー名またはパスワードが違います。"
+            else:
+                # ログイン成功
+                return f"{username} さんログイン成功！"  # 仮の画面
 
-        return redirect(url_for('login.login'))  # 登録後にログイン画面へ
-
-    return render_template('register.html')
-
+    return render_template("login.html", error=error)

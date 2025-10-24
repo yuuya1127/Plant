@@ -15,7 +15,6 @@
         overflow: hidden;
     }
 
-    /* 光の粒（背景アニメーション） */
     .particle {
         position: absolute;
         width: 8px;
@@ -93,6 +92,14 @@
     .fade-in {
         opacity: 1 !important;
     }
+
+    /* エラーメッセージ */
+    .error-message {
+        color: red;
+        margin-top: 15px;
+        font-weight: bold;
+        min-height: 24px; /* 文章が無くてもスペース確保 */
+    }
 </style>
 </head>
 <body>
@@ -106,33 +113,45 @@
         <h1>🌿 食物画像認識アプリ</h1>
         <form id="loginForm" action="/login" method="post">
             <label>ユーザー名</label>
-            <input type="text" name="username" id="username" required>
+            <input type="text" name="username" id="username">
 
             <label>パスワード</label>
-            <input type="password" name="password" required>
+            <input type="password" name="password" id="password">
 
-            <button type="button" onclick="showWelcome()">ログイン</button>
+            <button type="button" onclick="validateLogin()">ログイン</button>
         </form>
-        <p>アカウントをお持ちでない方は <a href="/register">新規登録</a></p>
+
+        <!-- エラーメッセージ -->
+        <div class="error-message" id="errorMessage"></div>
+
         <div class="welcome" id="welcomeText"></div>
+        <p>アカウントをお持ちでない方は <a href="/register">新規登録</a></p>
     </div>
 
 <script>
-function showWelcome() {
+function validateLogin() {
     const username = document.getElementById("username").value.trim();
-    if (!username) {
-        alert("ユーザー名を入力してください。");
-        return;
-    }
-
-    const card = document.getElementById("loginCard");
+    const password = document.getElementById("password").value.trim();
+    const errorDiv = document.getElementById("errorMessage");
     const form = document.getElementById("loginForm");
     const welcomeText = document.getElementById("welcomeText");
 
-    // フォームを隠す
-    form.style.display = "none";
+    errorDiv.innerText = ""; // 以前のエラーをクリア
 
-    // ようこそ → ユーザー名 → ログイン送信
+    // バリデーション
+    if (!username && !password) {
+        errorDiv.innerText = "ユーザー名とパスワードが未入力です。";
+        return;
+    } else if (!username) {
+        errorDiv.innerText = "ユーザー名が未入力です。";
+        return;
+    } else if (!password) {
+        errorDiv.innerText = "パスワードが未入力です。";
+        return;
+    }
+
+    // 入力OK → フォームを隠してウェルカム表示
+    form.style.display = "none";
     welcomeText.innerText = "🌱 ようこそ";
     welcomeText.classList.add("fade-in");
 
@@ -140,7 +159,6 @@ function showWelcome() {
         welcomeText.innerText = `🌿 ${username} さん`;
     }, 1500);
 
-    // 2.5秒後にログイン処理送信
     setTimeout(() => {
         form.submit();
     }, 2500);

@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect
 import requests
 import base64
 from io import BytesIO
 from flask_cors import CORS
+from db import get_connection
 
 #Blueprintをインポート
 from routes.login_routes import login_bp
@@ -17,6 +18,42 @@ app.register_blueprint(login_bp)
 
 # PlantNet APIキー
 PLANTNET_API_KEY = '2b10udgkH4OFC14bAPk0saAEO'
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form.get('username').strip()
+        password = request.form.get('password').strip()
+
+        # バリデーション
+        if not username or not password:
+            return render_template('register.html', error="ユーザー名とパスワードを入力してください。")
+
+        # DBに接続
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        # 既存ユーザー名のチェック
+        cursor.execute("SELECT * FROM users WHERE username=%s", (username,))
+        if cursor.fetchone():
+            cursor.close()
+            conn.close()
+            return render_template('register.html', error="そのユーザー名は既に使われています。")
+
+        # 新規登録
+        cursor.execute(
+            "INSERT INTO users (username, password) VALUES (%s, %s)",
+            (username, password)
+        )
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        # 登録後はログイン画面へ
+        return redirect('/')
+
+    # GETの場合は単純に登録画面表示
+    return render_template('register.html')
 
 @app.route('/')
 def index():
