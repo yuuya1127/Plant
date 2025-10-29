@@ -1,9 +1,10 @@
-from flask import Flask, render_template, request, jsonify, redirect
+from flask import Flask, render_template, request, jsonify, redirect, flash, url_for
 import requests
 import base64
 from io import BytesIO
 from flask_cors import CORS
 from db import get_connection
+from datetime import timedelta
 
 #Blueprintをインポート
 from routes.login_routes import login_bp
@@ -12,6 +13,7 @@ from routes.login_routes import login_bp
 app = Flask(__name__)
 CORS(app)
 app.secret_key = "dev_secret"
+app.permanent_session_lifetime = timedelta(minutes=30)
 
 #Blueprint登録
 app.register_blueprint(login_bp)
@@ -22,38 +24,82 @@ PLANTNET_API_KEY = '2b10udgkH4OFC14bAPk0saAEO'
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        username = request.form.get('username').strip()
-        password = request.form.get('password').strip()
+        username = request.form.get('username', '').strip()
+        password = request.form.get('password', '').strip()
 
-        # バリデーション
         if not username or not password:
-            return render_template('register.html', error="ユーザー名とパスワードを入力してください。")
+            flash("ユーザー名とパスワードを入力してください。")
+            return redirect('/register')
 
-        # DBに接続
         conn = get_connection()
         cursor = conn.cursor()
 
-        # 既存ユーザー名のチェック
-        cursor.execute("SELECT * FROM users WHERE username=%s", (username,))
+        # すでに登録済みか確認
+        cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
         if cursor.fetchone():
             cursor.close()
             conn.close()
-            return render_template('register.html', error="そのユーザー名は既に使われています。")
+            flash("このユーザー名はすでに使われています。")
+            return redirect(url_for("login_bp.login"))
 
-        # 新規登録
-        cursor.execute(
-            "INSERT INTO users (username, password) VALUES (%s, %s)",
-            (username, password)
-        )
+        # ユーザー登録
+        cursor.execute("INSERT INTO users (username, password) VALUES (%s, %s)", (username, password))
         conn.commit()
         cursor.close()
         conn.close()
 
-        # 登録後はログイン画面へ
-        return redirect('/')
-
-    # GETの場合は単純に登録画面表示
+        flash('登録が完了しました。ログインしてください。', 'success')
+        return redirect('/login')
+    
     return render_template('register.html')
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    error = ""
+
+    if request.method == "POST":
+        username = request.form.get("username", "").strip()
+        password = request.form.get("password", "").strip()
+
+        if not username or not password:
+            error = "ユーザー名とパスワードを入力してください。"
+        else:
+            conn = get_connection()
+            cursor = conn.cursor(dictionary=True)
+            cursor.execute(
+                "SELECT * FROM users WHERE BINARY username = %s AND BINARY password = %s",
+                (username, password)
+            )
+            user = cursor.fetchone()
+            cursor.close()
+            conn.close()
+
+            print("入力:", username, password)
+            print("検索結果:", user)
+
+            if not user:
+                error = "ユーザー名またはパスワードが違います。"
+            else:
+                session["username"] = username
+                session["just_logged_in"] = True
+                return redirect(url_for("welcome"))
+
+    return render_template("login.html", error=error)
+
+@app.route("/welcome")
+def welcome():
+    username = session.get("username")
+    just_logged_in = session.pop("just_logged_in", False)
+
+    if not username:
+        return redirect(url_for("login"))
+
+    if just_logged_in:
+        message = f"ようこそ、{username} さん！"
+    else:
+        message = f"{username} さん、こんにちは。"
+
+    return render_template("welcome.html", message=message)
 
 @app.route('/')
 def index():

@@ -121,8 +121,13 @@
             <button type="button" onclick="validateLogin()">ログイン</button>
         </form>
 
-        <!-- エラーメッセージ -->
-        <div class="error-message" id="errorMessage"></div>
+        <div class="error-message" id="errorMessage">
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {{ messages[0] }}
+                {% endif %}
+            {% endwith %}
+        </div>
 
         <div class="welcome" id="welcomeText"></div>
         <p>アカウントをお持ちでない方は <a href="/register">新規登録</a></p>
