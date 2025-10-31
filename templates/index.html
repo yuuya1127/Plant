@@ -159,11 +159,20 @@
 </head>
 <body>
     <div style="position:absolute; top:20px; right:20px;">
-    <a href="/login?next=/" 
-        style="padding:8px 16px; background-color:#4CAF50; color:white; border-radius:5px; text-decoration:none;">
-        ログイン
-    </a>
-</div>
+        {% if session.get('username') %}
+            <span style="padding:8px 16px; background-color:#4CAF50; color:white; border-radius:5px;">
+                {{ session.get('username') }} さん
+            </span>
+            <a href="{{ url_for('logout') }}" style="margin-left:10px; padding:8px 16px; background-color:#f44336; color:white; border-radius:5px; text-decoration:none;">
+                ログアウト
+            </a>
+        {% else %}
+            <a href="/login?next=/" style="padding:8px 16px; background-color:#4CAF50; color:white; border-radius:5px; text-decoration:none;">
+                ログイン
+            </a>
+        {% endif %}
+    </div>
+
     <div class="container">
         <div class="header">
             <h1>🌿 植物識別アプリ</h1>

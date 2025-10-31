@@ -5,6 +5,7 @@ from io import BytesIO
 from flask_cors import CORS
 from db import get_connection
 from datetime import timedelta
+from flask import request
 
 #Blueprintをインポート
 from routes.login_routes import login_bp
@@ -82,24 +83,18 @@ def login():
             else:
                 session["username"] = username
                 session["just_logged_in"] = True
-                return redirect(url_for("welcome"))
+            
+                next_page = request.args.get('next') or url_for('index')
+                return redirect(next_page)
 
     return render_template("login.html", error=error)
 
-@app.route("/welcome")
-def welcome():
-    username = session.get("username")
-    just_logged_in = session.pop("just_logged_in", False)
+@app.route('/logout')
+def logout():
+    session.clear()
+    flash("ログアウトしました。")
+    return redirect(url_for('index'))
 
-    if not username:
-        return redirect(url_for("login"))
-
-    if just_logged_in:
-        message = f"ようこそ、{username} さん！"
-    else:
-        message = f"{username} さん、こんにちは。"
-
-    return render_template("welcome.html", message=message)
 
 @app.route('/')
 def index():
