@@ -162,8 +162,8 @@ def result():
 
 if __name__ == '__main__':
     print('='*50)
-    print('🚀 PlantNet 植物識別アプリを起動中...')
-    print('📍 http://localhost:5001')
+    print(' PlantNet 植物識別アプリを起動中...')
+    print('http://localhost:5001')
     print('='*50)
     app.run(debug=True, port=5001, host="127.0.0.1")
 
