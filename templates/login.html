@@ -93,17 +93,16 @@
         opacity: 1 !important;
     }
 
-    /* エラーメッセージ */
     .error-message {
         color: red;
         margin-top: 15px;
         font-weight: bold;
-        min-height: 24px; /* 文章が無くてもスペース確保 */
+        min-height: 24px;
     }
 </style>
 </head>
 <body>
-    <!-- 光の粒を複数生成 -->
+    <!-- 光の粒 -->
     <div class="particle" style="top:10%;left:20%;animation-delay:0s;"></div>
     <div class="particle" style="top:30%;left:70%;animation-delay:1s;"></div>
     <div class="particle" style="top:60%;left:40%;animation-delay:2s;"></div>
@@ -111,63 +110,41 @@
 
     <div class="login-card" id="loginCard">
         <h1>🌿 食物画像認識アプリ</h1>
+
+        <!-- ログインフォーム -->
         <form id="loginForm" action="/login" method="post">
             <label>ユーザー名</label>
-            <input type="text" name="username" id="username">
+            <input type="text" name="username" value="{{ username if username else '' }}">
 
             <label>パスワード</label>
-            <input type="password" name="password" id="password">
+            <input type="password" name="password">
 
-            <button type="button" onclick="validateLogin()">ログイン</button>
+            <button type="submit">ログイン</button>
         </form>
 
-        <div class="error-message" id="errorMessage">
-            {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                    {{ messages[0] }}
-                {% endif %}
-            {% endwith %}
+        <!-- エラーメッセージ表示 -->
+        <div class="error-message">
+            {% if error %}
+                {{ error }}
+            {% endif %}
         </div>
 
-        <div class="welcome" id="welcomeText"></div>
+        <!-- 成功時のみ「ようこそ」アニメ -->
+        {% if success %}
+        <div class="welcome fade-in" id="welcomeText">
+            🌱 ようこそ {{ username }} さん
+        </div>
+
+        <script>
+            // 成功時はフォームを隠してアニメーション再生
+            document.getElementById("loginForm").style.display = "none";
+            setTimeout(() => {
+                window.location.href = "/user_info";
+            }, 2500);
+        </script>
+        {% endif %}
+
         <p>アカウントをお持ちでない方は <a href="/register">新規登録</a></p>
     </div>
-
-<script>
-function validateLogin() {
-    const username = document.getElementById("username").value.trim();
-    const password = document.getElementById("password").value.trim();
-    const errorDiv = document.getElementById("errorMessage");
-    const form = document.getElementById("loginForm");
-    const welcomeText = document.getElementById("welcomeText");
-
-    errorDiv.innerText = ""; // 以前のエラーをクリア
-
-    // バリデーション
-    if (!username && !password) {
-        errorDiv.innerText = "ユーザー名とパスワードが未入力です。";
-        return;
-    } else if (!username) {
-        errorDiv.innerText = "ユーザー名が未入力です。";
-        return;
-    } else if (!password) {
-        errorDiv.innerText = "パスワードが未入力です。";
-        return;
-    }
-
-    // 入力OK → フォームを隠してウェルカム表示
-    form.style.display = "none";
-    welcomeText.innerText = "🌱 ようこそ";
-    welcomeText.classList.add("fade-in");
-
-    setTimeout(() => {
-        welcomeText.innerText = `🌿 ${username} さん`;
-    }, 1500);
-
-    setTimeout(() => {
-        form.submit();
-    }, 2500);
-}
-</script>
 </body>
 </html>

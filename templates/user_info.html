@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>ユーザー情報</title>
+<style>
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #dcedc1, #a8e6cf);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.container {
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    width: 400px;
+    position: relative;
+}
+.back-button {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: #66bb6a;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+.back-button:hover {
+    background: #388e3c;
+}
+.welcome {
+    font-size: 26px;
+    color: #2e7d32;
+    opacity: 0;
+    transition: opacity 1s ease;
+    margin-top: 20px;
+}
+.fade-in {
+    opacity: 1 !important;
+}
+</style>
+</head>
+<body>
+    <div class="container">
+        <!-- 戻るボタン -->
+        <button class="back-button" onclick="window.location.href='/'">← 戻る</button>
+
+        <!-- アニメーション表示 -->
+        <div class="welcome" id="welcomeText">ようこそ</div>
+
+        <p>あなたのアカウント情報をここに表示できます。</p>
+        <a href="/logout">ログアウト</a>
+    </div>
+
+<script>
+// ログイン後に段階的にユーザー名を表示する
+window.addEventListener('DOMContentLoaded', () => {
+    const username = "{{ username }}";  // Flask から渡されるユーザー名
+    const welcomeText = document.getElementById("welcomeText");
+
+    // 1秒後に「🌿 ようこそ」に変更
+    setTimeout(() => {
+        welcomeText.innerText = "🌿 ようこそ";
+        welcomeText.classList.add("fade-in");
+    }, 500);
+
+    // 1.5秒後にユーザー名を追加
+    setTimeout(() => {
+        welcomeText.innerText = `🌿 ${username} さん`;
+    }, 2000);
+});
+</script>
+</body>
+</html>

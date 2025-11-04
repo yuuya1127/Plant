@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, redirect, flash, url_for
+from flask import Flask, render_template, request, jsonify, redirect, flash, url_for,session
 import requests
 import base64
 from io import BytesIO
@@ -15,6 +15,13 @@ app = Flask(__name__)
 CORS(app)
 app.secret_key = "dev_secret"
 app.permanent_session_lifetime = timedelta(minutes=30)
+
+@app.before_request
+def clear_session_on_start():
+    # 最初のリクエスト時のみログイン情報を削除
+    if 'initialized' not in session:
+        session.clear()
+        session['initialized'] = True
 
 #Blueprint登録
 app.register_blueprint(login_bp)
@@ -75,25 +82,33 @@ def login():
             cursor.close()
             conn.close()
 
-            print("入力:", username, password)
-            print("検索結果:", user)
-
             if not user:
                 error = "ユーザー名またはパスワードが違います。"
             else:
-                session["username"] = username
-                session["just_logged_in"] = True
-            
-                next_page = request.args.get('next') or url_for('index')
-                return redirect(next_page)
+                # ログイン成功時のみアニメーション表示
+                session["username"] = user["username"]
+                session["user_id"] = user["id"]
+                session["login_success"] = True  # 成功フラグ
+                return render_template("login.html", username=username, success=True)
 
     return render_template("login.html", error=error)
 
-@app.route('/logout')
+
+@app.route("/user_info")
+def user_info():
+    # ログインしていない場合はログイン画面へ戻す
+    if "username" not in session:
+        flash("ログインしてください。")
+        return redirect(url_for("login"))
+
+    return render_template("user_info.html", username=session["username"])
+
+
+@app.route("/logout")
 def logout():
     session.clear()
     flash("ログアウトしました。")
-    return redirect(url_for('index'))
+    return redirect(url_for("login"))
 
 
 @app.route('/')

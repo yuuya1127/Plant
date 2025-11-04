@@ -39,7 +39,7 @@ def login():
     return render_template("login.html", error=error)
 
 
-@login_bp.route("/welcome")
+@login_bp.route("/user-info")
 def welcome():
     username = session.get("username")
     just_logged_in = session.pop("just_logged_in", False)  # 一度だけ取り出して削除
@@ -54,4 +54,9 @@ def welcome():
     else:
         message = f"{username} さん、こんにちは。"
 
-    return render_template("welcome.html", message=message)
+    return render_template("user_info.html", message=message)
+
+@login_bp.route("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for("login_bp.login"))
