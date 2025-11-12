@@ -89,20 +89,32 @@ def login():
                 session["username"] = user["username"]
                 session["user_id"] = user["id"]
                 session["login_success"] = True  # 成功フラグ
-                return render_template("login.html", username=username, success=True)
+                return render_template("index.html", username=username, success=True)
 
     return render_template("login.html", error=error)
 
 
-@app.route("/user_info")
-def user_info():
-    # ログインしていない場合はログイン画面へ戻す
-    if "username" not in session:
-        flash("ログインしてください。")
-        return redirect(url_for("login"))
+@login_bp.route("/user-info")
+def welcome():
+    username = session.get("username")
+    just_logged_in = session.pop("just_logged_in", False)  # 一度だけ取り出して削除
 
-    return render_template("user_info.html", username=session["username"])
+    if not username:
+        # 未ログインならログインページへ戻す
+        return redirect(url_for("login_bp.login"))
 
+    # just_logged_in が True のときだけ演出を出す
+    if just_logged_in:
+        message = f"ようこそ、{username} さん！"
+    else:
+        message = f"{username} さん、こんにちは。"
+
+    # 🔹 username も一緒にテンプレートへ渡すように修正
+    return render_template("user_info.html", message=message, username=username)
+
+@app.route("/history")
+def history():
+    return render_template("history.html")
 
 @app.route("/logout")
 def logout():

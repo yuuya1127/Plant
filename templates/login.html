@@ -81,16 +81,25 @@
         background: linear-gradient(135deg, #43a047, #388e3c);
     }
 
-    .welcome {
-        font-size: 26px;
-        color: #2e7d32;
-        opacity: 0;
-        transition: opacity 1s ease;
-        margin-top: 30px;
+    /* ようこそメッセージ */
+    .welcome-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 200px;
     }
 
-    .fade-in {
-        opacity: 1 !important;
+    .welcome {
+        font-size: 28px;
+        color: white;
+        text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        opacity: 0;
+        animation: fadeInUp 1s ease-in-out forwards;
+    }
+
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 
     .error-message {
@@ -98,6 +107,11 @@
         margin-top: 15px;
         font-weight: bold;
         min-height: 24px;
+    }
+
+    a {
+        color: #2e7d32;
+        text-decoration: none;
     }
 </style>
 </head>
@@ -131,16 +145,19 @@
 
         <!-- 成功時のみ「ようこそ」アニメ -->
         {% if success %}
-        <div class="welcome fade-in" id="welcomeText">
-            🌱 ようこそ {{ username }} さん
+        <div class="welcome-container">
+            <div class="welcome" id="welcomeText">
+                🌱 ようこそ、{{ username }} さん！
+            </div>
         </div>
 
         <script>
             // 成功時はフォームを隠してアニメーション再生
             document.getElementById("loginForm").style.display = "none";
+            // 3秒後にアップロード画面（index.html）へ移動
             setTimeout(() => {
-                window.location.href = "/user_info";
-            }, 2500);
+                window.location.href = "/";
+            }, 3000);
         </script>
         {% endif %}
 

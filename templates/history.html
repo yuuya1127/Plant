@@ -1,0 +1,23 @@
+<div id="historyContainer"></div>
+
+<script>
+const historyData = JSON.parse(localStorage.getItem('plantHistory')) || [];
+const container = document.getElementById('historyContainer');
+
+if(historyData.length === 0){
+    container.innerHTML = '<p>履歴はありません</p>';
+} else {
+    historyData.forEach(item => {
+        const div = document.createElement('div');
+        div.innerHTML = `
+            <div style="margin-bottom:20px; border:1px solid #ccc; padding:10px; border-radius:10px;">
+                <img src="${item.image_url}" style="max-width:150px; display:block; margin-bottom:10px;">
+                <div>最初の結果: ${item.results[0].species.scientificNameWithoutAuthor}</div>
+                <div>確信度: ${(item.results[0].score*100).toFixed(1)}%</div>
+                <div>${new Date(item.timestamp).toLocaleString()}</div>
+            </div>
+        `;
+        container.appendChild(div);
+    });
+}
+</script>

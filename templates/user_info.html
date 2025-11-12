@@ -1,82 +1,71 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<title>ユーザー情報</title>
-<style>
-body {
-    margin: 0;
-    font-family: 'Poppins', sans-serif;
-    background: linear-gradient(135deg, #dcedc1, #a8e6cf);
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-.container {
-    background: white;
-    border-radius: 20px;
-    padding: 40px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-    text-align: center;
-    width: 400px;
-    position: relative;
-}
-.back-button {
-    position: absolute;
-    top: 15px;
-    left: 15px;
-    background: #66bb6a;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 10px;
-    cursor: pointer;
-}
-.back-button:hover {
-    background: #388e3c;
-}
-.welcome {
-    font-size: 26px;
-    color: #2e7d32;
-    opacity: 0;
-    transition: opacity 1s ease;
-    margin-top: 20px;
-}
-.fade-in {
-    opacity: 1 !important;
-}
-</style>
+  <meta charset="UTF-8">
+  <title>アカウント情報</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #a8e6cf, #dcedc1); /* 🌿 緑系グラデーション */
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: #2f4f4f; /* 植物っぽい落ち着いた文字色 */
+    }
+
+    .welcome-container {
+      text-align: center;
+      animation: fadeIn 1.2s ease-in-out;
+      background-color: rgba(255, 255, 255, 0.2);
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .welcome-container h1 {
+      font-size: 2em;
+      color: #2e7d32; /* 濃い緑 */
+      margin-bottom: 20px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .btn {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 25px;
+      background-color: #66bb6a; /* 明るい緑 */
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      transition: background 0.3s;
+      font-weight: bold;
+    }
+
+    .btn:hover {
+      background-color: #57a05a; /* 少し濃い緑に */
+    }
+
+    .logout-btn {
+      background-color: #ff5c5c;
+    }
+
+    .logout-btn:hover {
+      background-color: #e74c3c;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <!-- 戻るボタン -->
-        <button class="back-button" onclick="window.location.href='/'">← 戻る</button>
+  <div class="welcome-container">
 
-        <!-- アニメーション表示 -->
-        <div class="welcome" id="welcomeText">ようこそ</div>
+    <h1>{{ message }}</h1>
 
-        <p>あなたのアカウント情報をここに表示できます。</p>
-        <a href="/logout">ログアウト</a>
-    </div>
-
-<script>
-// ログイン後に段階的にユーザー名を表示する
-window.addEventListener('DOMContentLoaded', () => {
-    const username = "{{ username }}";  // Flask から渡されるユーザー名
-    const welcomeText = document.getElementById("welcomeText");
-
-    // 1秒後に「🌿 ようこそ」に変更
-    setTimeout(() => {
-        welcomeText.innerText = "🌿 ようこそ";
-        welcomeText.classList.add("fade-in");
-    }, 500);
-
-    // 1.5秒後にユーザー名を追加
-    setTimeout(() => {
-        welcomeText.innerText = `🌿 ${username} さん`;
-    }, 2000);
-});
-</script>
+    <a href="{{ url_for('index') }}" class="btn">戻る</a><br>
+    <a href="{{ url_for('login_bp.logout') }}" class="btn logout-btn">ログアウト</a>
+  </div>
 </body>
 </html>
