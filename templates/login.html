@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ログイン | 食物画像認識アプリ</title>
 <style>
     body {
@@ -39,6 +40,7 @@
         box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
         position: relative;
         z-index: 2;
+        transition: 0.3s ease;
     }
 
     h1 {
@@ -81,7 +83,6 @@
         background: linear-gradient(135deg, #43a047, #388e3c);
     }
 
-    /* ようこそメッセージ */
     .welcome-container {
         display: flex;
         justify-content: center;
@@ -113,6 +114,34 @@
         color: #2e7d32;
         text-decoration: none;
     }
+
+    /* 🔹スマホサイズでの最適化 */
+    @media (max-width: 480px) {
+        .login-card {
+            width: 90%;
+            padding: 30px;
+            border-radius: 15px;
+        }
+
+        h1 {
+            font-size: 22px;
+            margin-bottom: 15px;
+        }
+
+        input[type="text"], input[type="password"] {
+            font-size: 18px;
+            padding: 14px;
+        }
+
+        button {
+            font-size: 18px;
+            padding: 14px;
+        }
+
+        .welcome {
+            font-size: 24px;
+        }
+    }
 </style>
 </head>
 <body>
@@ -125,7 +154,6 @@
     <div class="login-card" id="loginCard">
         <h1>🌿 食物画像認識アプリ</h1>
 
-        <!-- ログインフォーム -->
         <form id="loginForm" action="/login" method="post">
             <label>ユーザー名</label>
             <input type="text" name="username" value="{{ username if username else '' }}">
@@ -136,14 +164,12 @@
             <button type="submit">ログイン</button>
         </form>
 
-        <!-- エラーメッセージ表示 -->
         <div class="error-message">
             {% if error %}
                 {{ error }}
             {% endif %}
         </div>
 
-        <!-- 成功時のみ「ようこそ」アニメ -->
         {% if success %}
         <div class="welcome-container">
             <div class="welcome" id="welcomeText">
@@ -152,9 +178,7 @@
         </div>
 
         <script>
-            // 成功時はフォームを隠してアニメーション再生
             document.getElementById("loginForm").style.display = "none";
-            // 3秒後にアップロード画面（index.html）へ移動
             setTimeout(() => {
                 window.location.href = "/";
             }, 3000);

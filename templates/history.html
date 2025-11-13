@@ -23,4 +23,36 @@ if (historyData.length === 0) {
         container.appendChild(div);
     });
 }
+
+// ✅ 戻るボタンを動的に追加する部分
+const backButton = document.createElement('button');
+backButton.textContent = '戻る';
+backButton.style.position = 'fixed';
+backButton.style.bottom = '20px';
+backButton.style.right = '20px';
+backButton.style.padding = '12px 18px';
+backButton.style.backgroundColor = '#66bb6a';
+backButton.style.color = 'white';
+backButton.style.border = 'none';
+backButton.style.borderRadius = '8px';
+backButton.style.fontSize = '16px';
+backButton.style.cursor = 'pointer';
+backButton.style.boxShadow = '0 4px 10px rgba(0,0,0,0.2)';
+backButton.style.transition = 'all 0.3s ease';
+
+// ホバー時の見た目変更
+backButton.addEventListener('mouseover', () => {
+    backButton.style.backgroundColor = '#43a047';
+});
+backButton.addEventListener('mouseout', () => {
+    backButton.style.backgroundColor = '#66bb6a';
+});
+
+// 戻るボタンクリック時の動作
+backButton.addEventListener('click', () => {
+    window.location.href = '/login';  // ← ログイン画面に戻す（必要なら '/' に変更）
+});
+
+// 画面に追加
+document.body.appendChild(backButton);
 </script>

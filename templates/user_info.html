@@ -2,31 +2,36 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>アカウント情報</title>
   <style>
     body {
-      background: linear-gradient(135deg, #a8e6cf, #dcedc1); /* 🌿 緑系グラデーション */
+      background: linear-gradient(135deg, #a8e6cf, #dcedc1);
       font-family: 'Poppins', sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      color: #2f4f4f; /* 植物っぽい落ち着いた文字色 */
+      color: #2f4f4f;
+      margin: 0;
     }
 
     .welcome-container {
       text-align: center;
       animation: fadeIn 1.2s ease-in-out;
-      background-color: rgba(255, 255, 255, 0.2);
+      background-color: rgba(255, 255, 255, 0.25);
       padding: 40px;
       border-radius: 16px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      width: 90%;
+      max-width: 400px;
     }
 
     .welcome-container h1 {
       font-size: 2em;
-      color: #2e7d32; /* 濃い緑 */
-      margin-bottom: 20px;
+      color: #2e7d32;
+      margin-bottom: 25px;
+      word-wrap: break-word;
     }
 
     @keyframes fadeIn {
@@ -36,35 +41,59 @@
 
     .btn {
       display: inline-block;
-      margin-top: 20px;
-      padding: 10px 25px;
-      background-color: #66bb6a; /* 明るい緑 */
+      margin-top: 15px;
+      padding: 12px 30px;
+      background-color: #81c784;
       color: white;
       text-decoration: none;
       border-radius: 8px;
-      transition: background 0.3s;
+      transition: all 0.3s ease;
       font-weight: bold;
+      border: 1px solid #66bb6a;
+      font-size: 1rem;
     }
 
     .btn:hover {
-      background-color: #57a05a; /* 少し濃い緑に */
+      background-color: #66bb6a;
+      transform: translateY(-2px);
     }
 
     .logout-btn {
       background-color: #ff5c5c;
+      border-color: #e74c3c;
     }
 
     .logout-btn:hover {
       background-color: #e74c3c;
     }
+
+    /* 📱 スマホ画面対応 */
+    @media (max-width: 480px) {
+      .welcome-container {
+        padding: 25px 20px;
+        border-radius: 12px;
+      }
+
+      .welcome-container h1 {
+        font-size: 1.5em;
+        margin-bottom: 20px;
+      }
+
+      .btn {
+        display: block;
+        width: 100%;
+        margin: 10px 0;
+        font-size: 1.1rem;
+        padding: 14px 0;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="welcome-container">
-
     <h1>{{ message }}</h1>
 
-    <a href="{{ url_for('index') }}" class="btn">戻る</a><br>
+    <a href="{{ url_for('index') }}" class="btn">戻る</a>
     <a href="{{ url_for('login_bp.logout') }}" class="btn logout-btn">ログアウト</a>
   </div>
 </body>
