@@ -46,7 +46,7 @@
       background-color: #16a34a;
       color: white;
       font-weight: bold;
-      border-radius: 8px; /* 完全な四角にしたい場合は0に変更 */
+      border-radius: 8px;
       text-decoration: none;
       transition: background 0.3s;
     }
@@ -339,14 +339,18 @@
         const data = await response.json();
 
         if (data.success) {
+          // ✅ 現在ログイン中のユーザー名を取得（Flaskから渡す）
+          const username = "{{ session.get('username') or 'guest' }}";
+          const historyKey = `plantHistory_${username}`;
+
           // --- 履歴に追加 ---
-          let history = JSON.parse(localStorage.getItem('plantHistory')) || [];
+          let history = JSON.parse(localStorage.getItem(historyKey)) || [];
           history.unshift({
               image_url: data.image_url,
               results: data.results,
               timestamp: new Date().toISOString()
           });
-          localStorage.setItem('plantHistory', JSON.stringify(history));
+          localStorage.setItem(historyKey, JSON.stringify(history));
 
           // 現在の解析結果も保存して結果画面へ
           localStorage.setItem('plantResults', JSON.stringify(data));
