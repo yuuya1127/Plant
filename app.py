@@ -35,30 +35,36 @@ def register():
         username = request.form.get('username', '').strip()
         password = request.form.get('password', '').strip()
 
+        # 入力チェック
         if not username or not password:
             flash("ユーザー名とパスワードを入力してください。")
-            return redirect('/register')
+            return render_template("register.html", error="ユーザー名とパスワードを入力してください")
 
         conn = get_connection()
-        cursor = conn.cursor()
+        cursor = conn.cursor(dictionary=True)
 
-        # すでに登録済みか確認
+        # すでに登録されているか確認
         cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
         if cursor.fetchone():
             cursor.close()
             conn.close()
-            flash("このユーザー名はすでに使われています。")
-            return redirect(url_for("login_bp.login"))
+            # ❗ ログイン画面に飛ばさず register.html に戻す
+            return render_template("register.html", error="このユーザー名はすでに使われています。")
 
-        # ユーザー登録
-        cursor.execute("INSERT INTO users (username, password) VALUES (%s, %s)", (username, password))
+        # 新規登録
+        cursor.execute(
+            "INSERT INTO users (username, password) VALUES (%s, %s)",
+            (username, password)
+        )
         conn.commit()
+
         cursor.close()
         conn.close()
 
-        flash('登録が完了しました。ログインしてください。', 'success')
-        return redirect('/login')
-    
+        flash("登録が完了しました。ログインしてください。", "success")
+        return redirect(url_for("login"))  # ← OK
+
+    # GET時は通常の画面表示
     return render_template('register.html')
 
 @app.route("/login", methods=["GET", "POST"])
@@ -71,27 +77,31 @@ def login():
 
         if not username or not password:
             error = "ユーザー名とパスワードを入力してください。"
-        else:
-            conn = get_connection()
-            cursor = conn.cursor(dictionary=True)
-            cursor.execute(
-                "SELECT * FROM users WHERE BINARY username = %s AND BINARY password = %s",
-                (username, password)
-            )
-            user = cursor.fetchone()
-            cursor.close()
-            conn.close()
+            return render_template("login.html", error=error, success=False, username=username)
 
-            if not user:
-                error = "ユーザー名またはパスワードが違います。"
-            else:
-                # ログイン成功時のみアニメーション表示
-                session["username"] = user["username"]
-                session["user_id"] = user["id"]
-                session["login_success"] = True  # 成功フラグ
-                return render_template("index.html", username=username, success=True)
+        # DB 検索
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute(
+            "SELECT * FROM users WHERE BINARY username = %s AND BINARY password = %s",
+            (username, password)
+        )
+        user = cursor.fetchone()
+        cursor.close()
+        conn.close()
 
-    return render_template("login.html", error=error)
+        if not user:
+            error = "ユーザー名またはパスワードが違います。"
+            return render_template("login.html", error=error, success=False, username=username)
+
+        # ★★★ ログイン成功 → アニメーション表示 ★★★
+        session["username"] = user["username"]
+        session["user_id"] = user["id"]
+
+        return render_template("login.html", success=True, username=username, error="")
+
+    # GET時
+    return render_template("login.html", error="", success=False)
 
 
 @login_bp.route("/user-info")

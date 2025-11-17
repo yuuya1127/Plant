@@ -14,8 +14,10 @@
         justify-content: center;
         align-items: center;
         overflow: hidden;
+        position: relative;
     }
 
+    /* 光の粒 */
     .particle {
         position: absolute;
         width: 8px;
@@ -31,6 +33,7 @@
         100% { transform: translateY(0) scale(1); opacity: 1; }
     }
 
+    /* ログインカード */
     .login-card {
         background: rgba(255, 255, 255, 0.9);
         border-radius: 20px;
@@ -83,26 +86,6 @@
         background: linear-gradient(135deg, #43a047, #388e3c);
     }
 
-    .welcome-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 200px;
-    }
-
-    .welcome {
-        font-size: 28px;
-        color: white;
-        text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-        opacity: 0;
-        animation: fadeInUp 1s ease-in-out forwards;
-    }
-
-    @keyframes fadeInUp {
-        from { opacity: 0; transform: translateY(30px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
     .error-message {
         color: red;
         margin-top: 15px;
@@ -115,32 +98,55 @@
         text-decoration: none;
     }
 
-    /* 🔹スマホサイズでの最適化 */
-    @media (max-width: 480px) {
-        .login-card {
-            width: 90%;
-            padding: 30px;
-            border-radius: 15px;
-        }
+    /* 🌱 成長する芽アニメーション（確実に見える改良版） */
+    .welcome-container {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        animation: fadeIn 1.2s ease-in-out;
+        background-color: rgba(255, 255, 255, 0.85);
+        padding: 40px;
+        border-radius: 16px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        width: 90%;
+        max-width: 400px;
+        z-index: 1000;
+    }
 
-        h1 {
-            font-size: 22px;
-            margin-bottom: 15px;
-        }
+    .sprout {
+        width: 30px;
+        height: 30px;
+        background: #000000; /* ← 黒で視認性UP */
+        margin: 0 auto;
+        border-radius: 10px;
+        transform-origin: bottom center;
+        animation: grow 2s ease-out forwards;
+    }
 
-        input[type="text"], input[type="password"] {
-            font-size: 18px;
-            padding: 14px;
-        }
+    @keyframes grow {
+        0% { transform: scaleY(0); }
+        50% { transform: scaleY(1.2); }
+        100% { transform: scaleY(1); }
+    }
 
-        button {
-            font-size: 18px;
-            padding: 14px;
-        }
+    .welcome {
+        opacity: 0;
+        font-size: 1.5rem;
+        margin-top: 15px;
+        animation: fadeInUp 1s ease-in-out 2s forwards;
+        color: #2e7d32;
+    }
 
-        .welcome {
-            font-size: 24px;
-        }
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 </style>
 </head>
@@ -170,22 +176,24 @@
             {% endif %}
         </div>
 
-        {% if success %}
-        <div class="welcome-container">
-            <div class="welcome" id="welcomeText">
-                🌱 ようこそ、{{ username }} さん！
-            </div>
-        </div>
-
-        <script>
-            document.getElementById("loginForm").style.display = "none";
-            setTimeout(() => {
-                window.location.href = "/";
-            }, 3000);
-        </script>
-        {% endif %}
-
         <p>アカウントをお持ちでない方は <a href="/register">新規登録</a></p>
     </div>
+
+    <!-- 🌱 ログイン成功時アニメーション -->
+    {% if success %}
+    <div class="welcome-container">
+        <div class="sprout" id="sprout"></div>
+        <div class="welcome" id="welcomeText">
+            🌱 ようこそ、{{ username }} さん！
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("loginForm").style.display = "none";
+        setTimeout(() => {
+            window.location.href = "/";
+        }, 4000);
+    </script>
+    {% endif %}
 </body>
 </html>
