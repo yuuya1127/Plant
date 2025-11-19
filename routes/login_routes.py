@@ -1,12 +1,12 @@
 from flask import Blueprint, render_template, request, session, redirect, url_for
-from db import get_connection  # ← DB接続関数を忘れずに
+from db import get_connection
 from datetime import timedelta
 
 login_bp = Blueprint("login_bp", __name__)
 
-# セッションの有効期限（例：30分）
-# app.py 側で app.permanent_session_lifetime = timedelta(minutes=30) を設定してもOK
-
+# -----------------------------------------
+# 🔑 ログイン処理
+# -----------------------------------------
 @login_bp.route("/login", methods=["GET", "POST"])
 def login():
     error = ""
@@ -15,48 +15,54 @@ def login():
         username = request.form.get("username", "").strip()
         password = request.form.get("password", "").strip()
 
+        # 入力チェック
         if not username or not password:
             error = "ユーザー名とパスワードを入力してください。"
-        else:
-            conn = get_connection()
-            cursor = conn.cursor(dictionary=True)
-            cursor.execute(
-                "SELECT * FROM users WHERE BINARY username = %s AND BINARY password = %s",
-                (username, password)
-            )
-            user = cursor.fetchone()
-            cursor.close()
-            conn.close()
+            return render_template("login.html", error=error, success=False, username=username)
 
-            if not user:
-                error = "ユーザー名またはパスワードが違います。"
-            else:
-                # 🔹 セッションに保存して「ログイン済み」として扱う
-                session["username"] = username
-                session["just_logged_in"] = True  # ← ログイン直後だけ True
-                return redirect(url_for("login_bp.welcome"))  # ログイン後に別画面へ
+        # DB検索
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute(
+            "SELECT * FROM users WHERE BINARY username = %s AND BINARY password = %s",
+            (username, password)
+        )
+        user = cursor.fetchone()
+        cursor.close()
+        conn.close()
 
-    return render_template("login.html", error=error)
+        if not user:
+            error = "ユーザー名またはパスワードが違います。"
+            return render_template("login.html", error=error, success=False, username=username)
+
+        # ログイン成功
+        session["username"] = user["username"]
+        session["user_id"] = user["id"]
+
+        # ログイン後に user-info へ移動
+        return redirect(url_for("login_bp.welcome"))
+
+    return render_template("login.html", error="", success=False, username="")
 
 
-@login_bp.route("/user-info")
-def welcome():
-    username = session.get("username")
-    just_logged_in = session.pop("just_logged_in", False)  # 一度だけ取り出して削除
-
-    if not username:
-        # 未ログインならログインページへ戻す
-        return redirect(url_for("login_bp.login"))
-
-    # just_logged_in が True のときだけ演出を出す
-    if just_logged_in:
-        message = f"ようこそ、{username} さん！"
-    else:
-        message = f"{username} さん、こんにちは。"
-
-    return render_template("user_info.html", message=message)
-
+# -----------------------------------------
+# 🔑 ログアウト
+# -----------------------------------------
 @login_bp.route("/logout")
 def logout():
     session.clear()
     return redirect(url_for("login_bp.login"))
+
+
+# -----------------------------------------
+# 🔑 ユーザー情報ページ
+# -----------------------------------------
+@login_bp.route("/user-info")
+def welcome():
+    username = session.get("username")
+
+    if not username:
+        return redirect(url_for("login_bp.login"))
+
+    # ← message をここで渡す必要がある！
+    return render_template("user_info.html", message=f"{username} さん、ログインおかえりなさい！")

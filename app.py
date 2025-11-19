@@ -67,7 +67,7 @@ def register():
     # GET時は通常の画面表示
     return render_template('register.html')
 
-@app.route("/login", methods=["GET", "POST"])
+@login_bp.route("/login", methods=["GET", "POST"])
 def login():
     error = ""
 
@@ -79,7 +79,6 @@ def login():
             error = "ユーザー名とパスワードを入力してください。"
             return render_template("login.html", error=error, success=False, username=username)
 
-        # DB 検索
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
         cursor.execute(
@@ -94,15 +93,14 @@ def login():
             error = "ユーザー名またはパスワードが違います。"
             return render_template("login.html", error=error, success=False, username=username)
 
-        # ★★★ ログイン成功 → アニメーション表示 ★★★
+        # ★ ログイン成功 ★
         session["username"] = user["username"]
         session["user_id"] = user["id"]
 
-        return render_template("login.html", success=True, username=username, error="")
+        # ★ 正しく index に飛ぶコード
+        return redirect(url_for("index"))
 
-    # GET時
     return render_template("login.html", error="", success=False)
-
 
 @login_bp.route("/user-info")
 def welcome():
