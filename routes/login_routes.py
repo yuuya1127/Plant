@@ -65,4 +65,4 @@ def welcome():
         return redirect(url_for("login_bp.login"))
 
     # ← message をここで渡す必要がある！
-    return render_template("user_info.html", message=f"{username} さん、ログインおかえりなさい！")
+    return render_template("user_info.html", message=f"{username} さん、ログイン")

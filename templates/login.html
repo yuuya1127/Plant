@@ -9,12 +9,12 @@
         margin: 0;
         padding: 0;
         font-family: 'Poppins', sans-serif;
-        /* 🌿 自然・植物感のあるグラデーション */
         background: linear-gradient(135deg, #a8e6cf, #dcedc1);
         display: flex;
         justify-content: center;
         align-items: center;
         height: 100vh;
+        position: relative;
     }
 
     .login-container {
@@ -25,17 +25,18 @@
         box-shadow: 0 8px 30px rgba(0,0,0,0.2);
         background: rgba(255, 255, 255, 0.9);
         text-align: center;
+        position: relative;
     }
 
     h2 {
         margin-bottom: 20px;
-        color: #2e7d32; /* 植物系グリーン */
+        color: #2e7d32;
     }
 
     form {
         display: flex;
         flex-direction: column;
-        align-items: center; /* 入力欄を中央寄せ */
+        align-items: stretch;
         width: 100%;
     }
 
@@ -45,8 +46,7 @@
         margin-bottom: 5px;
         margin-top: 10px;
         color: #333;
-        width: 100%;
-        text-align: left; /* ラベルは左寄せ */
+        text-align: left;
     }
 
     input {
@@ -55,7 +55,30 @@
         border-radius: 10px;
         border: 1px solid #ccc;
         font-size: 14px;
-        text-align: center; /* 入力文字を中央寄せ */
+        box-sizing: border-box;
+    }
+
+    /* パスワード枠 */
+    .password-wrapper {
+        width: 100%;
+        position: relative;
+    }
+
+    .password-wrapper input {
+        width: 100%;
+        padding-right: 40px;
+        box-sizing: border-box;
+    }
+
+    /* 👁 アイコン */
+    .toggle-password {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 18px;
+        cursor: pointer;
+        user-select: none;
     }
 
     .btn {
@@ -94,9 +117,31 @@
     a:hover {
         text-decoration: underline;
     }
+
+    /* 背景に固定する左上戻るボタン */
+    .back-btn {
+        position: fixed;
+        top: 15px;
+        left: 15px;
+        padding: 6px 12px;
+        background-color: #388e3c;
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-size: 14px;
+        z-index: 1000;
+        transition: 0.3s;
+    }
+
+    .back-btn:hover {
+        background-color: #2e7d32;
+    }
 </style>
 </head>
 <body>
+
+<!-- 背景に固定された戻るボタン -->
+<a href="{{ url_for('index') }}" class="back-btn">← 戻る</a>
 
 <div class="login-container">
     <h2>🌿 食物画像認識アプリ</h2>
@@ -110,7 +155,10 @@
         <input type="text" name="username">
 
         <label>パスワード</label>
-        <input type="password" name="password">
+        <div class="password-wrapper">
+            <input type="password" id="password" name="password">
+            <span class="toggle-password" id="toggle-icon">👁️‍🗨️</span>
+        </div>
 
         <button class="btn" type="submit">ログイン</button>
     </form>
@@ -119,6 +167,21 @@
         <p>アカウントがない？ <a href="/register">新規登録</a></p>
     </div>
 </div>
+
+<script>
+const pwd = document.getElementById("password");
+const icon = document.getElementById("toggle-icon");
+
+icon.addEventListener("click", () => {
+    if (pwd.type === "password") {
+        pwd.type = "text";
+        icon.textContent = "👁"; 
+    } else {
+        pwd.type = "password";
+        icon.textContent = "👁️‍🗨️"; 
+    }
+});
+</script>
 
 </body>
 </html>
