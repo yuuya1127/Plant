@@ -62,7 +62,7 @@ def register():
         conn.close()
 
         flash("登録が完了しました。ログインしてください。", "success")
-        return redirect(url_for("login"))  # ← OK
+        return redirect(url_for("login_bp.login"))  # ← OK
 
     # GET時は通常の画面表示
     return render_template('register.html')
@@ -128,7 +128,7 @@ def history():
 def logout():
     session.clear()
     flash("ログアウトしました。")
-    return redirect(url_for("login"))
+    return redirect(url_for("login_bp.login"))
 
 
 @app.route('/')
