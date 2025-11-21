@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>アップロード | 食物画像認識アプリ</title>
+<style>
+    body {
+        font-family: "Helvetica", "Arial", sans-serif;
+        margin: 0;
+        padding: 20px;
+        box-sizing: border-box;
+        background: #f0f0f0;
+        display: flex;
+        justify-content: center;
+    }
+
+    .upload-container {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 16px;
+        max-width: 380px;
+        width: 100%;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        text-align: center;
+    }
+
+    #previewImage {
+        max-width: 100%;
+        height: auto;
+        margin-bottom: 15px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+    }
+
+    input[type="file"] {
+        margin-bottom: 10px;
+    }
+
+    button {
+        background-color: #66bb6a;
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    button:hover {
+        background-color: #43a047;
+    }
+</style>
+</head>
+<body>
+    <div class="upload-container">
+        <h2>画像アップロード</h2>
+        <img id="previewImage" src="" alt="プレビュー画像">
+        <form method="post" action="/upload" enctype="multipart/form-data">
+            <input type="file" name="file">
+            <br>
+            <button type="submit">アップロード</button>
+        </form>
+    </div>
+
+<script>
+// localStorage から画像を読み込む
+window.addEventListener('DOMContentLoaded', () => {
+    const imgData = localStorage.getItem('uploadImage');
+    if (imgData) {
+        const imgElem = document.getElementById('previewImage');
+        imgElem.src = imgData;
+
+        // 一時データは削除
+        localStorage.removeItem('uploadImage');
+    }
+});
+</script>
+</body>
+</html>

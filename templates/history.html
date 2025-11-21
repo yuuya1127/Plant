@@ -1,58 +1,62 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>履歴 | 食物画像認識アプリ</title>
+<style>
+body {
+    margin:0; padding:10px; font-family:'Poppins', sans-serif;
+    background: linear-gradient(135deg, #a8e6cf, #dcedc1);
+}
+#historyContainer > div {
+    margin-bottom:20px; border:1px solid #ccc; padding:10px; border-radius:10px;
+    background:#fff; max-width:380px; width:100%; margin:auto; box-sizing:border-box; cursor:pointer;
+}
+#historyContainer img { width:100%; border-radius:8px; display:block; margin-bottom:10px; }
+#historyContainer div { font-size:14px; color:#333; line-height:1.4; }
+#historyContainer p { text-align:center; font-size:16px; color:#666; }
+button#backButton { position:fixed; bottom:20px; right:20px; padding:12px 18px; background:#66bb6a; color:white; border:none; border-radius:8px; font-size:16px; cursor:pointer; box-shadow:0 4px 10px rgba(0,0,0,0.2);}
+button#backButton:hover { background:#43a047; }
+</style>
+</head>
+<body>
+
+<h2 style="text-align:center;">📜 履歴</h2>
 <div id="historyContainer"></div>
 
 <script>
-const username = "{{ session.get('username') or 'guest' }}";  // ← Flaskからユーザー名を取得
-const historyKey = `plantHistory_${username}`;                // ← ユーザーごとのキーを設定
+const username = "{{ session.get('username') or 'guest' }}";  
+const historyKey = `plantHistory_${username}`;                
 const historyData = JSON.parse(localStorage.getItem(historyKey)) || [];
-
 const container = document.getElementById('historyContainer');
 
-if (historyData.length === 0) {
+if(historyData.length === 0){
     container.innerHTML = '<p>履歴はありません</p>';
-} else {
+}else{
     historyData.forEach(item => {
         const div = document.createElement('div');
         div.innerHTML = `
-            <div style="margin-bottom:20px; border:1px solid #ccc; padding:10px; border-radius:10px;">
-                <img src="${item.image_url}" style="max-width:150px; display:block; margin-bottom:10px;">
-                <div>最初の結果: ${item.results[0].species.scientificNameWithoutAuthor}</div>
-                <div>確信度: ${(item.results[0].score * 100).toFixed(1)}%</div>
-                <div>${new Date(item.timestamp).toLocaleString()}</div>
-            </div>
+            <img src="${item.image_url}">
+            <div>最初の結果: ${item.results[0].species.scientificNameWithoutAuthor}</div>
+            <div>確信度: ${(item.results[0].score*100).toFixed(1)}%</div>
+            <div>${new Date(item.timestamp).toLocaleString()}</div>
         `;
+        div.addEventListener('click', () => {
+            localStorage.setItem('uploadImage', item.image_url);
+            window.location.href = '/';
+        });
         container.appendChild(div);
     });
 }
 
-// ✅ 戻るボタンを動的に追加する部分
+// 戻るボタン
 const backButton = document.createElement('button');
+backButton.id = 'backButton';
 backButton.textContent = '戻る';
-backButton.style.position = 'fixed';
-backButton.style.bottom = '20px';
-backButton.style.right = '20px';
-backButton.style.padding = '12px 18px';
-backButton.style.backgroundColor = '#66bb6a';
-backButton.style.color = 'white';
-backButton.style.border = 'none';
-backButton.style.borderRadius = '8px';
-backButton.style.fontSize = '16px';
-backButton.style.cursor = 'pointer';
-backButton.style.boxShadow = '0 4px 10px rgba(0,0,0,0.2)';
-backButton.style.transition = 'all 0.3s ease';
-
-// ホバー時の見た目変更
-backButton.addEventListener('mouseover', () => {
-    backButton.style.backgroundColor = '#43a047';
-});
-backButton.addEventListener('mouseout', () => {
-    backButton.style.backgroundColor = '#66bb6a';
-});
-
-// 戻るボタンクリック時の動作
-backButton.addEventListener('click', () => {
-    window.location.href = '/';
-});
-
-// 画面に追加
+backButton.addEventListener('click', ()=>{ window.location.href = '/'; });
 document.body.appendChild(backButton);
 </script>
+
+</body>
+</html>

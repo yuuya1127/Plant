@@ -277,6 +277,29 @@
     const accountCircle = document.getElementById("accountCircle");
     const dropdownMenu = document.getElementById("dropdownMenu");
 
+    window.addEventListener('DOMContentLoaded', () => {
+    // --- 履歴から画像があれば自動セット ---
+    const imgData = localStorage.getItem('uploadImage');
+    if (imgData) {
+      previewImage.src = imgData;
+      uploadArea.style.display = 'none';
+      previewArea.style.display = 'block';
+
+    // ファイルとして input にセット
+    fetch(imgData)
+      .then(res => res.blob())
+      .then(blob => {
+        const file = new File([blob], "history_image.png", { type: blob.type });
+        const dt = new DataTransfer();
+        dt.items.add(file);
+        imageInput.files = dt.files;
+        selectedFile = file;
+      });
+
+    localStorage.removeItem('uploadImage');
+  }
+});
+
     if (accountCircle) {
       accountCircle.addEventListener("click", () => {
         dropdownMenu.style.display =

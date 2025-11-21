@@ -130,6 +130,16 @@ def logout():
     flash("ログアウトしました。")
     return redirect(url_for("login_bp.login"))
 
+@app.route("/upload", methods=["GET", "POST"])
+def upload():
+    if request.method == "POST":
+        file = request.files.get("file")
+        if file:
+            # ここでアップロード処理
+            file.save(f"./uploads/{file.filename}")
+        return redirect(url_for("upload"))
+    return render_template("upload.html")
+
 
 @app.route('/')
 def index():

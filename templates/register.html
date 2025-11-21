@@ -1,94 +1,121 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <title>新規登録 | 食物画像認識アプリ</title>
-    <style>
-        body {
-            font-family: "Helvetica", "Arial", sans-serif;
-            background: linear-gradient(135deg, #c2f0c2, #a4e5d9);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>新規登録 | 食物画像認識アプリ</title>
+<style>
+    body {
+        font-family: "Helvetica", "Arial", sans-serif;
+        background: linear-gradient(135deg, #c2f0c2, #a4e5d9);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        padding: 10px;
+        box-sizing: border-box;
+    }
 
+    .register-container {
+        background-color: #fff;
+        padding: 30px 40px;
+        border-radius: 20px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        text-align: center;
+        width: 100%;
+        max-width: 380px; /* PCでもログイン画面と同じ幅に */
+        margin: 0 auto; /* 中央寄せ */
+        box-sizing: border-box;
+    }
+
+    h1 {
+        color: #2d572c;
+        margin-bottom: 25px;
+        font-size: 24px;
+    }
+
+    .error-message {
+        color: red;
+        font-weight: bold;
+        margin-bottom: 15px;
+    }
+
+    label {
+        display: block;
+        text-align: left;
+        margin-top: 10px;
+        font-weight: bold;
+        color: #333;
+    }
+
+    input[type="text"] {
+        width: 100%;
+        padding: 12px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        font-size: 16px;
+        box-sizing: border-box;
+    }
+
+    input[type="submit"] {
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        padding: 12px;
+        width: 100%;
+        margin-top: 20px;
+        border-radius: 10px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    input[type="submit"]:hover {
+        background-color: #45a049;
+    }
+
+    p {
+        margin-top: 20px;
+        font-size: 14px;
+    }
+
+    a {
+        color: #2d572c;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    a:hover {
+        text-decoration: underline;
+    }
+
+    /* 📱 小さい画面用の調整 */
+    @media (max-width: 400px) {
         .register-container {
-            background-color: #fff;
-            padding: 40px 60px;
-            border-radius: 20px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-            text-align: center;
-            width: 350px;
+            padding: 20px;
         }
 
         h1 {
-            color: #2d572c;
-            margin-bottom: 25px;
-            font-size: 24px;
+            font-size: 20px;
         }
 
-        /* 🔻 追加：エラー表示 */
-        .error-message {
-            color: red;
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
-
-        label {
-            display: block;
-            text-align: left;
-            margin-top: 10px;
-            font-weight: bold;
-            color: #333;
-        }
-
-        input[type="text"], input[type="password"] {
-            width: 100%;
+        input[type="text"], input[type="submit"] {
+            font-size: 14px;
             padding: 10px;
-            margin-top: 5px;
-            border: 1px solid #ccc;
-            border-radius: 10px;
-            font-size: 16px;
-        }
-
-        input[type="submit"] {
-            background-color: #4caf50;
-            color: white;
-            border: none;
-            padding: 12px;
-            width: 100%;
-            margin-top: 20px;
-            border-radius: 10px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-
-        input[type="submit"]:hover {
-            background-color: #45a049;
         }
 
         p {
-            margin-top: 20px;
+            font-size: 13px;
         }
-
-        a {
-            color: #2d572c;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-    </style>
+    }
+</style>
 </head>
 <body>
     <div class="register-container">
         <h1>アカウント登録</h1>
 
-        <!-- 🔻 エラーメッセージ表示部分 -->
         {% if error %}
             <div class="error-message">{{ error }}</div>
         {% endif %}
@@ -98,7 +125,7 @@
             <input type="text" name="username" required>
 
             <label>パスワード</label>
-            <input type="password" name="password" required>
+            <input type="text" name="password" required>
 
             <input type="submit" value="登録">
         </form>
