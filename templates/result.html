@@ -5,248 +5,139 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>識別結果 - 植物識別アプリ</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #f0fdf4 0%, #d1fae5 100%);
             min-height: 100vh;
             padding: 40px 20px;
         }
-        
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-        }
-        
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        
-        .header h1 {
-            color: #166534;
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-        }
-        
+        .container { max-width: 900px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { color: #166534; font-size: 2.5rem; margin-bottom: 10px; }
+ 
         .back-btn {
-            background: #6b7280;
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            font-size: 1rem;
-            font-weight: 600;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: background 0.3s;
+            background: #6b7280; color: white;
+            border: none; padding: 12px 30px;
+            font-size: 1rem; font-weight: 600;
+            border-radius: 10px; cursor: pointer;
             margin-bottom: 20px;
         }
-        
-        .back-btn:hover {
-            background: #4b5563;
+ 
+        .image-section, .results-section {
+            background: white; border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 30px; margin-bottom: 30px;
         }
-        
-        .image-section {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            padding: 30px;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-        
-        .uploaded-image {
-            max-width: 100%;
-            max-height: 400px;
-            border-radius: 15px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        
-        .results-section {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            padding: 30px;
-        }
-        
+ 
+        .uploaded-image { max-width: 100%; max-height: 400px; border-radius: 15px; }
+ 
         .section-title {
-            color: #166534;
-            font-size: 1.8rem;
-            margin-bottom: 20px;
-            font-weight: 600;
+            color: #166534; font-size: 1.8rem;
+            margin-bottom: 20px; font-weight: 600;
         }
-        
-        .main-result {
-            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-            border: 2px solid #16a34a;
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 30px;
-        }
-        
-        .plant-name {
-            font-size: 1.8rem;
-            color: #166534;
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-        
-        .common-name {
-            font-size: 1.2rem;
-            color: #4b5563;
-            margin-bottom: 15px;
-        }
-        
-        .confidence {
-            display: inline-block;
-            background: #16a34a;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 25px;
-            font-size: 1.3rem;
-            font-weight: 700;
-        }
-        
-        .family-info {
-            margin-top: 15px;
-            color: #6b7280;
-            font-size: 0.95rem;
-        }
-        
-        .other-results {
-            margin-top: 30px;
-        }
-        
-        .other-title {
-            color: #374151;
-            font-size: 1.3rem;
-            margin-bottom: 15px;
-            font-weight: 600;
-        }
-        
-        .result-item {
+ 
+        /* ----- Gemini説明 ----- */
+        .gemini-box {
             background: #f9fafb;
-            border: 1px solid #e5e7eb;
-            border-radius: 10px;
-            padding: 15px;
+            border: 1px solid #d1d5db;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        .gemini-title {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: #166534;
             margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
-        
-        .result-info {
-            flex: 1;
-        }
-        
-        .result-name {
-            font-weight: 600;
-            color: #1f2937;
-            font-size: 1.1rem;
-            margin-bottom: 5px;
-        }
-        
-        .result-common {
-            color: #6b7280;
-            font-size: 0.9rem;
-        }
-        
-        .result-score {
-            background: #e5e7eb;
-            color: #374151;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-weight: 600;
+        .gemini-text {
             font-size: 1rem;
-        }
-        
-        .no-results {
-            text-align: center;
-            padding: 40px;
-            color: #6b7280;
-            font-size: 1.1rem;
+            color: #374151;
+            line-height: 1.6;
+            white-space: pre-wrap;
         }
     </style>
 </head>
+ 
 <body>
-    <div class="container">
-        <button class="back-btn" onclick="location.href='/'">← 画像選択に戻る</button>
-        
-        <div class="header">
-            <h1>🌿 識別結果</h1>
-        </div>
-        
-        <div class="image-section">
-            <img id="uploadedImage" class="uploaded-image" alt="アップロードされた画像">
-        </div>
-        
-        <div class="results-section">
-            <h2 class="section-title">識別結果</h2>
-            
-            <div id="mainResult"></div>
-            
-            <div class="other-results">
-                <h3 class="other-title">その他の候補</h3>
-                <div id="otherResults"></div>
-            </div>
-        </div>
+<div class="container">
+    <button class="back-btn" onclick="location.href='/'">← 画像選択に戻る</button>
+ 
+    <div class="header">
+        <h1>識別結果</h1>
     </div>
-    
-    <script>
-        // localStorageから結果を取得
-        const resultsData = JSON.parse(localStorage.getItem('plantResults'));
-        
-        if (!resultsData || !resultsData.results || resultsData.results.length === 0) {
-            document.getElementById('mainResult').innerHTML = '<div class="no-results">結果がありません</div>';
-        } else {
-            // アップロードされた画像を表示
-            document.getElementById('uploadedImage').src = resultsData.image_url;
-            
-            // 最も確信度の高い結果（1位）
-            const topResult = resultsData.results[0];
-            const mainResultHTML = `
-                <div class="main-result">
-                    <div class="plant-name">${topResult.species.scientificNameWithoutAuthor}</div>
-                    <div class="common-name">
-                        ${topResult.species.commonNames && topResult.species.commonNames.length > 0 
-                            ? topResult.species.commonNames.join(', ') 
-                            : '一般名なし'}
-                    </div>
-                    <div class="confidence">${(topResult.score * 100).toFixed(1)}%</div>
-                    ${topResult.species.family 
-                        ? `<div class="family-info">科: ${topResult.species.family.scientificNameWithoutAuthor}</div>` 
-                        : ''}
-                </div>
-            `;
-            document.getElementById('mainResult').innerHTML = mainResultHTML;
-            
-            // その他の結果（2位以降、最大4件）
-            const otherResults = resultsData.results.slice(1, 5);
-            let otherResultsHTML = '';
-            
-            otherResults.forEach(result => {
-                otherResultsHTML += `
-                    <div class="result-item">
-                        <div class="result-info">
-                            <div class="result-name">${result.species.scientificNameWithoutAuthor}</div>
-                            <div class="result-common">
-                                ${result.species.commonNames && result.species.commonNames.length > 0 
-                                    ? result.species.commonNames.join(', ') 
-                                    : '一般名なし'}
-                            </div>
-                        </div>
-                        <div class="result-score">${(result.score * 100).toFixed(1)}%</div>
-                    </div>
-                `;
-            });
-            
-            document.getElementById('otherResults').innerHTML = otherResultsHTML || '<div class="no-results">他の候補はありません</div>';
-        }
-    </script>
+ 
+    <div class="image-section">
+        <img id="uploadedImage" class="uploaded-image" alt="植物画像">
+    </div>
+ 
+    <div class="results-section">
+        <h2 class="section-title">識別結果</h2>
+        <div id="mainResult"></div>
+        <div id="otherResults"></div>
+    </div>
+ 
+    <!-- ★★ Gemini説明エリア ★★ -->
+    <div class="results-section" id="gemini-section" style="display:none;">
+        <h2 class="section-title">植物の説明（AIによる生成）</h2>
+ 
+        <div class="gemini-box">
+            <div class="gemini-title">花言葉</div>
+            <div class="gemini-text" id="g_flower"></div>
+        </div>
+ 
+        <div class="gemini-box">
+            <div class="gemini-title">由来</div>
+            <div class="gemini-text" id="g_origin"></div>
+        </div>
+ 
+        <div class="gemini-box">
+            <div class="gemini-title">栽培方法</div>
+            <div class="gemini-text" id="g_howto"></div>
+        </div>
+ 
+        <div class="gemini-box">
+            <div class="gemini-title">特徴</div>
+            <div class="gemini-text" id="g_features"></div>
+        </div>
+ 
+    </div>
+ 
+</div>
+ 
+<script>
+    const data = JSON.parse(localStorage.getItem("plantResults"));
+ 
+    if (!data) {
+        alert("結果データがありません。");
+        location.href = "/";
+    }
+ 
+    document.getElementById("uploadedImage").src = data.image_url;
+ 
+    /* ======= PlantNet結果の表示 ======= */
+    if (data.results && data.results.length > 0) {
+        const top = data.results[0];
+        document.getElementById("mainResult").innerHTML = `
+            <div>
+                <h3>${top.species.scientificNameWithoutAuthor}</h3>
+                <p>${top.species.commonNames?.join(", ") || "一般名なし"}</p>
+                <p>確信度: ${(top.score * 100).toFixed(1)}%</p>
+            </div>
+        `;
+    }
+ 
+    /* ======= ★★★ Geminiの説明表示 ★★★ ======= */
+    const g = data.gemini_description;
+    if (g) {
+        document.getElementById("gemini-section").style.display = "block";
+ 
+        document.getElementById("g_flower").textContent   = g["花言葉"] || "説明なし";
+        document.getElementById("g_origin").textContent   = g["由来"] || "説明なし";
+        document.getElementById("g_howto").textContent    = g["栽培方法"] || "説明なし";
+        document.getElementById("g_features").textContent = g["特徴"] || "説明なし";
+    }
+</script>
 </body>
 </html>

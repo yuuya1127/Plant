@@ -66,3 +66,29 @@ def welcome():
 
     # ← message をここで渡す必要がある！
     return render_template("user_info.html", message=f"{username} さん、ログイン")
+
+
+# -----------------------------------------
+# 🔑 言語設定（ふりがななど）
+# -----------------------------------------
+@login_bp.route("/set_language", methods=["POST"])
+def set_language():
+    import json
+    user_id = session.get("user_id")
+    if not user_id:
+        return {"success": False, "message": "ログインしてください"}
+
+    data = request.get_json()
+    language = data.get("language", "hiragana")
+
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute(
+        "UPDATE user_settings SET language=%s WHERE user_id=%s",
+        (language, user_id)
+    )
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    return {"success": True, "message": "言語設定を更新しました"}

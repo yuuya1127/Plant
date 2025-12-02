@@ -6,6 +6,7 @@ from flask_cors import CORS
 from db import get_connection
 from datetime import timedelta
 from flask import request
+from google import genai
 
 #Blueprintをインポート
 from routes.login_routes import login_bp
@@ -27,7 +28,53 @@ def clear_session_on_start():
 app.register_blueprint(login_bp)
 
 # PlantNet APIキー
-PLANTNET_API_KEY = '2b10udgkH4OFC14bAPk0saAEO'
+PLANTNET_API_KEY = '2b10kyDU7O4G8EU6G1INHSe8wu'
+
+# Gemini APIキー
+GEMINI_API_KEY = "AIzaSyAx1PDAWgDXuxL4W0Wrz9rQRkQ0WInDqt8"
+
+# === Gemini説明生成関数 ===
+def get_gemini_description(plant_name):
+    client = genai.Client(api_key=GEMINI_API_KEY)
+ 
+    prompt = f"""
+    次の植物について日本語で説明してください。
+    - 植物名: {plant_name}
+    以下の項目をそれぞれ「花言葉」「由来」「栽培方法」「特徴」という見出しの下に出力してください。
+    出力フォーマットは以下のようにしてください。
+ 
+    花言葉:（ここに説明）
+    由来:（ここに説明）
+    栽培方法:（ここに説明）
+    特徴:（ここに説明）
+    """
+ 
+    response = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=prompt
+    )
+ 
+    text = response.text
+ 
+    # 出力を項目ごとに分割して整理
+    sections = {"花言葉": "", "由来": "", "栽培方法": "", "特徴": ""}
+    current_key = None
+ 
+    for line in text.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        for key in sections.keys():
+            if line.startswith(key + ":"):
+                current_key = key
+                sections[key] = line[len(key) + 1:].strip()
+                break
+        else:
+            if current_key:
+                sections[current_key] += "\n" + line
+ 
+    return sections
+
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -146,69 +193,75 @@ def index():
     """画像選択画面"""
     return render_template('index.html')
 
+# === 植物識別 API ===
 @app.route('/identify', methods=['POST'])
 def identify():
     """植物識別処理"""
     try:
-        # アップロードされた画像を取得
         if 'image' not in request.files:
             return jsonify({'error': '画像がアップロードされていません'}), 400
-        
+ 
         image_file = request.files['image']
-        
         if image_file.filename == '':
             return jsonify({'error': '画像が選択されていません'}), 400
-        
-        # 画像をバイナリで読み込み
+ 
         image_data = image_file.read()
-        
-        # PlantNet APIにリクエスト
-        files = {
-            'images': (image_file.filename, BytesIO(image_data), image_file.content_type)
-        }
-        data = {
-            'organs': 'auto'
-        }
-        
-        print(f"PlantNet APIにリクエスト送信中...")
+        files = {'images': (image_file.filename, BytesIO(image_data), image_file.content_type)}
+        data = {'organs': 'auto'}
+ 
         response = requests.post(
             f'https://my-api.plantnet.org/v2/identify/all?api-key={PLANTNET_API_KEY}',
             files=files,
             data=data
         )
-        
-        print(f"レスポンス: {response.status_code}")
-        
+ 
         if response.status_code != 200:
             return jsonify({'error': f'API Error: {response.status_code}'}), response.status_code
-        
+ 
         result = response.json()
-        
-        # 画像をBase64エンコード（結果画面で表示するため）
         image_base64 = base64.b64encode(image_data).decode('utf-8')
         image_url = f"data:{image_file.content_type};base64,{image_base64}"
-        
-        print(f"✅ 識別成功: {len(result.get('results', []))}件の結果")
-        
+ 
+        # 一番確信度の高い植物名を取得
+        if len(result.get('results', [])) > 0:
+            top_plant_name = result['results'][0]['species']['scientificNameWithoutAuthor']
+        else:
+            top_plant_name = None
+ 
+        # 🔥 植物名が取れなかった場合の安全処理（重要）
+        if top_plant_name:
+            gemini_description = get_gemini_description(top_plant_name)
+        else:
+            gemini_description = {
+                "花言葉": "植物名が特定できなかったため説明を生成できませんでした。",
+                "由来": "植物名が特定できなかったため説明を生成できませんでした。",
+                "栽培方法": "植物名が特定できなかったため説明を生成できませんでした。",
+                "特徴": "植物名が特定できなかったため説明を生成できませんでした。"
+            }
+ 
         return jsonify({
             'success': True,
             'image_url': image_url,
-            'results': result.get('results', [])
+            'results': result.get('results', []),
+            'gemini_description': gemini_description
         })
-        
+ 
     except Exception as e:
         print(f"❌ エラー: {str(e)}")
         return jsonify({'error': str(e)}), 500
-
+ 
+ 
+# === 結果表示 ===
 @app.route('/result')
 def result():
-    """結果表示画面"""
     return render_template('result.html')
-
+ 
+ 
+# === 起動 ===
 if __name__ == '__main__':
-    print('='*50)
-    print(' PlantNet 植物識別アプリを起動中...')
-    print('http://localhost:5001')
-    print('='*50)
+    print('=' * 50)
+    print('🚀 PlantNet 植物識別アプリを起動中...')
+    print('📍 http://localhost:5001')
+    print('=' * 50)
     app.run(debug=True, port=5001, host="127.0.0.1")
 
