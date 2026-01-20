@@ -9,53 +9,115 @@ body {
     margin:0; padding:10px; font-family:'Poppins', sans-serif;
     background: linear-gradient(135deg, #a8e6cf, #dcedc1);
 }
-#historyContainer > div {
-    margin-bottom:20px; border:1px solid #ccc; padding:10px; border-radius:10px;
-    background:#fff; max-width:380px; width:100%; margin:auto; box-sizing:border-box; cursor:pointer;
+#historyContainer {
+    display:flex;
+    flex-direction:column;
+    gap:15px;
 }
-#historyContainer img { width:100%; border-radius:8px; display:block; margin-bottom:10px; }
-#historyContainer div { font-size:14px; color:#333; line-height:1.4; }
-#historyContainer p { text-align:center; font-size:16px; color:#666; }
-button#backButton { position:fixed; bottom:20px; right:20px; padding:12px 18px; background:#66bb6a; color:white; border:none; border-radius:8px; font-size:16px; cursor:pointer; box-shadow:0 4px 10px rgba(0,0,0,0.2);}
-button#backButton:hover { background:#43a047; }
+.history-item {
+    background:#fff;
+    padding:12px;
+    border-radius:10px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+}
+.history-img {
+    width:30%;
+    border-radius:10px;
+}
+.result-title {
+    font-size:18px;
+    font-weight:bold;
+    margin-top:8px;
+}
+.result-score {
+    font-size:14px;
+    color:#444;
+}
+.result-time {
+    font-size:12px;
+    color:#666;
+}
+
+/* 右下に固定される戻るボタン */
+#backButton {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 12px 20px;
+    background: #4caf50;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+    cursor: pointer;
+}
 </style>
 </head>
 <body>
 
-<h2 style="text-align:center;">📜 履歴</h2>
-<div id="historyContainer"></div>
+<h2>履歴</h2>
+<div id="historyContainer">読み込み中...</div>
 
 <script>
-const username = "{{ session.get('username') or 'guest' }}";  
-const historyKey = `plantHistory_${username}`;                
-const historyData = JSON.parse(localStorage.getItem(historyKey)) || [];
-const container = document.getElementById('historyContainer');
+// -----------------------------
+// DBの履歴をAPIから取得して表示
+// -----------------------------
+async function loadHistory() {
+    const container = document.getElementById('historyContainer');
+    container.innerHTML = "読み込み中...";
 
-if(historyData.length === 0){
-    container.innerHTML = '<p>履歴はありません</p>';
-}else{
-    historyData.forEach(item => {
-        const div = document.createElement('div');
-        div.innerHTML = `
-            <img src="${item.image_url}">
-            <div>最初の結果: ${item.results[0].species.scientificNameWithoutAuthor}</div>
-            <div>確信度: ${(item.results[0].score*100).toFixed(1)}%</div>
-            <div>${new Date(item.timestamp).toLocaleString()}</div>
-        `;
-        div.addEventListener('click', () => {
-            localStorage.setItem('uploadImage', item.image_url);
-            window.location.href = '/';
+    try {
+        const res = await fetch("/api/history");
+
+        if (!res.ok) {
+            container.innerHTML = "履歴を読み込めません";
+            return;
+        }
+
+        const data = await res.json();
+
+        if (data.length === 0) {
+            container.innerHTML = "履歴がありません。";
+            return;
+        }
+
+        container.innerHTML = ""; // 一旦クリア
+
+        data.forEach(item => {
+            const div = document.createElement("div");
+            div.className = "history-item";
+
+            div.innerHTML = `
+                <img src="${item.image_path}" class="history-img">
+                <div class="result-title">${item.result}</div>
+                <div class="result-score">スコア: ${item.score}</div>
+                <div class="result-time">${item.timestamp}</div>
+            `;
+
+            container.appendChild(div);
         });
-        container.appendChild(div);
-    });
+
+    } catch (err) {
+        console.error(err);
+        container.innerHTML = "エラーが発生しました。";
+    }
 }
+
+// ページ読み込み時に実行
+loadHistory();
 
 // 戻るボタン
 const backButton = document.createElement('button');
 backButton.id = 'backButton';
 backButton.textContent = '戻る';
-backButton.addEventListener('click', ()=>{ window.location.href = '/'; });
+backButton.addEventListener('click', ()=>{ 
+    window.location.href = '/'; 
+});
+
+// ← ここが修正ポイント！ appendChildで追加
 document.body.appendChild(backButton);
+
 </script>
 
 </body>

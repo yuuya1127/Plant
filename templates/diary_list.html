@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4" style="max-width: 600px;">
+    <h3>🌱 新しい植物を登録</h3>
+    <form action="{{ url_for('add_plant') }}" method="POST" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label>ニックネーム</label>
+            <input type="text" name="name" class="form-control" required placeholder="例：パキラちゃん">
+        </div>
+        <div class="mb-3">
+            <label>種類（任意）</label>
+            <input type="text" name="species" class="form-control" placeholder="例：パキラ">
+        </div>
+        <div class="mb-3">
+            <label>水やり頻度（目安）</label>
+            <select name="interval" class="form-control">
+                <option value="3">3日に1回</option>
+                <option value="7" selected>1週間に1回</option>
+                <option value="14">2週間に1回</option>
+                <option value="30">1ヶ月に1回</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label>トップ画像</label>
+            <input type="file" name="image" class="form-control">
+        </div>
+        
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-success">登録する</button>
+            <a href="{{ url_for('index') }}" class="btn btn-secondary">ホームに戻る</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

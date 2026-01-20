@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <h2>{{ plant.name }} <span class="fs-6 text-muted">({{ plant.species }})</span></h2>
+        <a href="{{ url_for('diary_list') }}" class="btn btn-outline-secondary">一覧へ戻る</a>
+    </div>
+    
+    <div class="card my-4 p-3 bg-light">
+        <h5>📝 今日の記録をつける</h5>
+        <form method="POST" enctype="multipart/form-data">
+            <div class="row g-2">
+                <div class="col-md-3">
+                    <select name="log_type" class="form-select">
+                        <option value="water">💧 水やり</option>
+                        <option value="fertilizer">💊 肥料</option>
+                        <option value="photo">📷 写真のみ</option>
+                        <option value="note">✏️ メモ</option>
+                    </select>
+                </div>
+                <div class="col-md-5">
+                    <input type="text" name="content" class="form-control" placeholder="一言メモ（任意）">
+                </div>
+                <div class="col-md-3">
+                    <input type="file" name="image" class="form-control">
+                </div>
+                <div class="col-md-1">
+                    <button type="submit" class="btn btn-primary w-100">記録</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="timeline">
+        {% for log in logs %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <h5 class="card-title">
+                        {% if log.log_type == 'water' %}💧 水やりしました
+                        {% elif log.log_type == 'fertilizer' %}💊 肥料をあげました
+                        {% elif log.log_type == 'photo' %}📷 成長記録
+                        {% else %}✏️ メモ{% endif %}
+                    </h5>
+                    <small class="text-muted">{{ log.log_date }}</small>
+                </div>
+                {% if log.content %}<p class="card-text">{{ log.content }}</p>{% endif %}
+                {% if log.image_path %}
+                <img src="{{ log.image_path }}" class="img-fluid rounded mt-2" style="max-width: 300px;">
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

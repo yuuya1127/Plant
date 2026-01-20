@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ログイン | 食物画像認識アプリ</title>
+<title>ログイン | 植物画像認識アプリ</title>
 <style>
     body {
         margin: 0;
@@ -109,6 +109,10 @@
         margin-top: 15px;
     }
 
+    .register-link p {
+        margin: 8px 0;
+    }
+
     a {
         color: #2e7d32;
         text-decoration: none;
@@ -116,6 +120,16 @@
 
     a:hover {
         text-decoration: underline;
+    }
+
+    /* パスワードを忘れたリンクのスタイル */
+    .forgot-password-link {
+        color: #ff6f00;
+        font-size: 13px;
+    }
+
+    .forgot-password-link:hover {
+        color: #e65100;
     }
 
     /* 背景に固定する左上戻るボタン */
@@ -136,6 +150,16 @@
     .back-btn:hover {
         background-color: #2e7d32;
     }
+
+    /* 成功メッセージ */
+    .success-message {
+        background-color: #c8e6c9;
+        color: #2e7d32;
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        font-size: 14px;
+    }
 </style>
 </head>
 <body>
@@ -144,7 +168,19 @@
 <a href="{{ url_for('index') }}" class="back-btn">← 戻る</a>
 
 <div class="login-container">
-    <h2>🌿 食物画像認識アプリ</h2>
+    <h2>🌿 植物画像認識アプリ</h2>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                {% if category == 'success' %}
+                    <p class="success-message">{{ message }}</p>
+                {% else %}
+                    <p class="message">{{ message }}</p>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
 
     {% if error %}
         <p class="message">{{ error }}</p>
@@ -152,7 +188,7 @@
 
     <form action="/login" method="POST">
         <label>ユーザー名</label>
-        <input type="text" name="username">
+        <input type="text" name="username" value="{{ username if username else '' }}">
 
         <label>パスワード</label>
         <div class="password-wrapper">
@@ -165,6 +201,7 @@
 
     <div class="register-link">
         <p>アカウントがない？ <a href="/register">新規登録</a></p>
+        <p><a href="/forgot-password" class="forgot-password-link">🔑 パスワードを忘れた場合</a></p>
     </div>
 </div>
 
